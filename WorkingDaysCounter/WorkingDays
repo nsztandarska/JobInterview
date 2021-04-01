@@ -1,0 +1,94 @@
+/*
+Implement the method countWorkingDays
+For each date range pick only the working days (Monday - Friday) in the given month.
+Date ranges are inclusive.
+
+The example below illustrates how to calculate working days
+Working days in February for the dates given below are:
+
+2020-01-20 - 2020-02-10: 6
+2020-01-20 - 2020-03-10: 20
+2020-02-10 - 2020-02-20: 9
+2020-02-20 - 2020-03-10: 7
+2021-02-20 - 2021-03-10: 0
+                Total:42
+
+ */
+
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.Year;
+import java.util.*;
+
+public class WorkingDays {
+
+    public static void main(String[] args) {
+
+        ArrayList<LocalDate> dateRange1 = new ArrayList<LocalDate>() {{
+            add(LocalDate.of(2020, 01, 20));
+            add(LocalDate.of(2020, 02, 10)); //6
+        }};
+        ArrayList<LocalDate> dateRange2 = new ArrayList<LocalDate>() {{
+            add(LocalDate.of(2020, 01, 20));
+                    add(LocalDate.of(2020, 03, 10)); //20
+        }};
+        ArrayList<LocalDate> dateRange3 = new ArrayList<LocalDate>() {{
+            add(LocalDate.of(2020, 02, 10));
+                    add(LocalDate.of(2020, 02, 20)); // 9
+        }};
+        ArrayList<LocalDate> dateRange4 = new ArrayList<LocalDate>() {{
+            add(LocalDate.of(2020, 02, 20));
+                    add(LocalDate.of(2020, 03, 10)); //7
+        }};
+
+        ArrayList<LocalDate> dateRange5 = new ArrayList<LocalDate>() {{
+            add(LocalDate.of(2021, 02, 20));
+                    add(LocalDate.of(2021, 03, 10)); //0
+        }};
+
+        List<ArrayList<LocalDate>> lld = new ArrayList<ArrayList<LocalDate>>();
+        lld.add(dateRange1);
+        lld.add(dateRange2);
+        lld.add(dateRange3);
+        lld.add(dateRange4);
+        lld.add(dateRange5);
+
+        Month month = Month.FEBRUARY;
+        Year year = Year.of(2020);
+        countWorkingDays(lld, month, year);
+    }
+
+
+    public static int countWorkingDays(final List<ArrayList<LocalDate>> leaveBookings, final Month month, final Year year) {
+
+        int workingDaysInAllRanges = 0;
+        int workingDaysInOneRange = 0;
+
+        for (int i = 0; i < leaveBookings.size(); i++) {
+            ArrayList<LocalDate> listOfDates = leaveBookings.get(i);
+            LocalDate start = listOfDates.get(0);
+            LocalDate end = listOfDates.get(1);
+            workingDaysInOneRange = countWorkingDaysInRange(start, end, month, year);
+            System.out.println(start.toString() + " - " + end.toString() + ": " + workingDaysInOneRange);
+            workingDaysInAllRanges += workingDaysInOneRange;
+        }
+        System.out.println("                  Total: " + workingDaysInAllRanges);
+        return workingDaysInAllRanges;
+    }
+
+    public static int countWorkingDaysInRange(LocalDate startDate, LocalDate endDate, final Month m, final Year y) {
+        int count = 0;
+        int month = m.getValue();
+        int year = y.getValue();
+        Set<DayOfWeek> weekend = EnumSet.of(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY);
+        for (LocalDate date = startDate; date.isBefore(endDate.plusDays(1)); date = date.plusDays(1)) {  // date.isBefore(endDate.plusDays(1) because we need to count working days in range inclusive
+            if (date.getMonthValue() == month && date.getYear() == year) {
+                if (! weekend.contains(date.getDayOfWeek())) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+}
